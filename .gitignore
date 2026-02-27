@@ -25,3 +25,10 @@ replay_pid*
 
 node_modules/
 pnpm-lock.yaml
+dist/
+build/
+out/
+target/
+bin/
+logs/
+logs/
