@@ -1,48 +1,35 @@
-import type {
-  AccountRequest,
-  AccountResponse,
-  GraphResponse,
-  RelationRequest,
-} from '../types/api'
+const BASE = '/api';
 
-const BASE = '/api'
-
-async function request<T>(
+const request = async <T>(
   path: string,
-  options?: RequestInit,
-): Promise<T> {
+  init?: RequestInit
+): Promise<T> => {
   const res = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    ...options,
-  })
+    headers: { 'Content-Type': 'application/json', ...init?.headers },
+    ...init,
+  });
   if (!res.ok) {
-    const text = await res.text()
-    throw new Error(text || `HTTP ${res.status}`)
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { message?: string }).message ?? res.statusText);
   }
-  if (res.status === 204 || res.headers.get('content-length') === '0') {
-    return undefined as T
-  }
-  return res.json() as Promise<T>
-}
+  if (res.status === 204) return undefined as T;
+  return res.json();
+};
 
-export function createNode(body: AccountRequest): Promise<void> {
-  return request<void>('/node', {
+export const createNode = (username: string) =>
+  request<void>('/node', {
     method: 'POST',
-    body: JSON.stringify(body),
-  })
-}
+    body: JSON.stringify({ username }),
+  });
 
-export function getNode(username: string): Promise<AccountResponse> {
-  return request<AccountResponse>(`/node/${encodeURIComponent(username)}`)
-}
+export const getNode = (username: string) =>
+  request<import('@/types/api').AccountResponse>(`/node/${encodeURIComponent(username)}`);
 
-export function createRelationship(body: RelationRequest): Promise<void> {
-  return request<void>('/relationship', {
+export const createRelationship = (start: string, end: string) =>
+  request<void>('/relationship', {
     method: 'POST',
-    body: JSON.stringify(body),
-  })
-}
+    body: JSON.stringify({ start, end }),
+  });
 
-export function getGraph(): Promise<GraphResponse> {
-  return request<GraphResponse>('/graph')
-}
+export const getGraph = () =>
+  request<import('@/types/api').GraphResponse>('/graph');
