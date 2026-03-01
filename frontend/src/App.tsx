@@ -6,8 +6,8 @@ function App() {
   return (
     <BrowserRouter>
       <nav style={{ padding: '1rem', borderBottom: '1px solid #eee', display: 'flex', gap: '1rem' }}>
-        <Link to="/">Graph</Link>
-        <Link to="/account">Account</Link>
+        <Link to="/">그래프</Link>
+        <Link to="/account">계정</Link>
       </nav>
       <Routes>
         <Route path="/" element={<GraphPage />} />

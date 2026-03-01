@@ -11,4 +11,7 @@ public interface AccountJpaRepository extends JpaRepository<AccountJpa, Long> {
 
     @Query("SELECT DISTINCT a FROM AccountJpa a LEFT JOIN FETCH a.following")
     List<AccountJpa> findAllWithFollowing();
+
+    @Query(value = "SELECT FROM_ACCOUNT_ID, TO_ACCOUNT_ID FROM FOLLOW", nativeQuery = true)
+    List<Object[]> findAllFollowPairs();
 }

@@ -20,14 +20,15 @@ public class GraphQueryAdapter implements GraphQueryPort {
     @Override
     @Transactional(readOnly = true)
     public Graph loadGraph() {
-        List<AccountJpa> all = jpaRepository.findAllWithFollowing();
-        List<Graph.NodeView> nodes = all.stream()
+        List<Graph.NodeView> nodes = jpaRepository.findAll().stream()
                 .map(a -> new Graph.NodeView(a.getId(), a.getUsername()))
                 .collect(Collectors.toList());
         List<Graph.EdgeView> edges = new ArrayList<>();
-        for (AccountJpa a : all) {
-            for (AccountJpa f : a.getFollowing()) {
-                edges.add(new Graph.EdgeView(a.getId(), f.getId()));
+        for (Object[] row : jpaRepository.findAllFollowPairs()) {
+            Long fromId = row[0] instanceof Number n ? n.longValue() : null;
+            Long toId = row[1] instanceof Number n ? n.longValue() : null;
+            if (fromId != null && toId != null) {
+                edges.add(new Graph.EdgeView(fromId, toId));
             }
         }
         return Graph.of(nodes, edges);

@@ -14,10 +14,10 @@ export default function AccountPage() {
     setMessage(null);
     try {
       await createNode(username.trim());
-      setMessage('Created.');
+      setMessage('계정이 생성되었습니다.');
       setUsername('');
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : 'Failed');
+      setMessage(err instanceof Error ? err.message : '실패했습니다.');
     }
   };
 
@@ -26,11 +26,11 @@ export default function AccountPage() {
     setMessage(null);
     try {
       await createRelationship(start.trim(), end.trim());
-      setMessage('Relationship created.');
+      setMessage('팔로우 관계가 생성되었습니다.');
       setStart('');
       setEnd('');
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : 'Failed');
+      setMessage(err instanceof Error ? err.message : '실패했습니다.');
     }
   };
 
@@ -42,32 +42,32 @@ export default function AccountPage() {
       const res = await getNode(lookup.trim());
       setAccount(res);
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : 'Not found');
+      setMessage(err instanceof Error ? err.message : '찾을 수 없습니다.');
     }
   };
 
   return (
     <div style={{ padding: '1rem', maxWidth: '32rem' }}>
       <section style={{ marginBottom: '1.5rem' }}>
-        <h2>Create account</h2>
+        <h2>계정 생성</h2>
         <form onSubmit={handleCreateNode}>
           <input
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Username"
+            placeholder="사용자명"
             required
             style={{ marginRight: '0.5rem', padding: '0.25rem' }}
           />
-          <button type="submit">Create</button>
+          <button type="submit">생성</button>
         </form>
       </section>
       <section style={{ marginBottom: '1.5rem' }}>
-        <h2>Create follow</h2>
+        <h2>팔로우 생성</h2>
         <form onSubmit={handleCreateRelation}>
           <input
             value={start}
             onChange={(e) => setStart(e.target.value)}
-            placeholder="From username"
+            placeholder="팔로우 하는 사용자명"
             required
             style={{ marginRight: '0.5rem', padding: '0.25rem' }}
           />
@@ -75,24 +75,24 @@ export default function AccountPage() {
           <input
             value={end}
             onChange={(e) => setEnd(e.target.value)}
-            placeholder="To username"
+            placeholder="팔로우 대상 사용자명"
             required
             style={{ marginRight: '0.5rem', padding: '0.25rem' }}
           />
-          <button type="submit">Follow</button>
+          <button type="submit">팔로우</button>
         </form>
       </section>
       <section style={{ marginBottom: '1.5rem' }}>
-        <h2>Lookup account</h2>
+        <h2>계정 조회</h2>
         <form onSubmit={handleLookup}>
           <input
             value={lookup}
             onChange={(e) => setLookup(e.target.value)}
-            placeholder="Username"
+            placeholder="사용자명"
             required
             style={{ marginRight: '0.5rem', padding: '0.25rem' }}
           />
-          <button type="submit">Lookup</button>
+          <button type="submit">조회</button>
         </form>
         {account && (
           <pre style={{ marginTop: '0.5rem', padding: '0.5rem', background: '#f5f5f5', overflow: 'auto' }}>
@@ -100,7 +100,7 @@ export default function AccountPage() {
           </pre>
         )}
       </section>
-      {message && <p style={{ color: message.startsWith('Created') || message.startsWith('Relationship') ? 'green' : 'crimson' }}>{message}</p>}
+      {message && <p style={{ color: message.startsWith('계정이') || message.startsWith('팔로우') ? 'green' : 'crimson' }}>{message}</p>}
     </div>
   );
 }
