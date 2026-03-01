@@ -1,6 +1,8 @@
 # Account Network<br/>
 <img width="942" height="549" alt="image" src="https://github.com/user-attachments/assets/cfd5750e-9572-4ee1-bcce-ba51ae449d76" />
 <br/><br/>
+<img width="1229" height="713" alt="image" src="https://github.com/user-attachments/assets/68006d57-ab20-437c-bd9d-8eec3adf11a6" />
+<br/><Br/>
 ## 프로젝트 소개
 
 **Account Network**는 SNS 계정과 팔로우 관계를 노드·간선 그래프로 다루는 웹 애플리케이션입니다.  <br/>
