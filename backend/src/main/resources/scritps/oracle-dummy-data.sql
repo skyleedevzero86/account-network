@@ -30,34 +30,26 @@ CREATE TABLE FOLLOW (
 
 -- ---------------------------------------------------------------------------
 -- 더미 데이터 (기존 테이블이 이미 있을 때는 위 DROP/CREATE 없이 이 부분만 실행 가능)
+-- ACCOUNT 1만 건 + FOLLOW 1만 건
 -- ---------------------------------------------------------------------------
 
 DELETE FROM FOLLOW;
 DELETE FROM ACCOUNT;
 
-INSERT INTO ACCOUNT (USERNAME) VALUES ('alice');
-INSERT INTO ACCOUNT (USERNAME) VALUES ('bob');
-INSERT INTO ACCOUNT (USERNAME) VALUES ('charlie');
-INSERT INTO ACCOUNT (USERNAME) VALUES ('devyummi');
-INSERT INTO ACCOUNT (USERNAME) VALUES ('xxxjjhhh');
-INSERT INTO ACCOUNT (USERNAME) VALUES ('eve');
-INSERT INTO ACCOUNT (USERNAME) VALUES ('frank');
+-- ACCOUNT 10,000건: user00001 ~ user10000
+INSERT INTO ACCOUNT (USERNAME)
+SELECT 'user' || LPAD(LEVEL, 5, '0') FROM DUAL CONNECT BY LEVEL <= 10000;
 
+-- FOLLOW 10,000건: ACCOUNT 실제 ID 기준으로 계정 i → 계정 i+1 (마지막→첫번째).
+-- IDENTITY가 1부터가 아니어도 항상 삽입된 계정 ID와 일치함.
 INSERT INTO FOLLOW (FROM_ACCOUNT_ID, TO_ACCOUNT_ID)
-SELECT a.id, b.id FROM ACCOUNT a, ACCOUNT b WHERE a.username = 'alice' AND b.username = 'bob';
-INSERT INTO FOLLOW (FROM_ACCOUNT_ID, TO_ACCOUNT_ID)
-SELECT a.id, b.id FROM ACCOUNT a, ACCOUNT b WHERE a.username = 'alice' AND b.username = 'charlie';
-INSERT INTO FOLLOW (FROM_ACCOUNT_ID, TO_ACCOUNT_ID)
-SELECT a.id, b.id FROM ACCOUNT a, ACCOUNT b WHERE a.username = 'bob' AND b.username = 'charlie';
-INSERT INTO FOLLOW (FROM_ACCOUNT_ID, TO_ACCOUNT_ID)
-SELECT a.id, b.id FROM ACCOUNT a, ACCOUNT b WHERE a.username = 'devyummi' AND b.username = 'xxxjjhhh';
-INSERT INTO FOLLOW (FROM_ACCOUNT_ID, TO_ACCOUNT_ID)
-SELECT a.id, b.id FROM ACCOUNT a, ACCOUNT b WHERE a.username = 'charlie' AND b.username = 'devyummi';
-INSERT INTO FOLLOW (FROM_ACCOUNT_ID, TO_ACCOUNT_ID)
-SELECT a.id, b.id FROM ACCOUNT a, ACCOUNT b WHERE a.username = 'xxxjjhhh' AND b.username = 'eve';
-INSERT INTO FOLLOW (FROM_ACCOUNT_ID, TO_ACCOUNT_ID)
-SELECT a.id, b.id FROM ACCOUNT a, ACCOUNT b WHERE a.username = 'alice' AND b.username = 'devyummi';
-INSERT INTO FOLLOW (FROM_ACCOUNT_ID, TO_ACCOUNT_ID)
-SELECT a.id, b.id FROM ACCOUNT a, ACCOUNT b WHERE a.username = 'eve' AND b.username = 'frank';
+SELECT a.id, b.id
+FROM (
+    SELECT id, ROW_NUMBER() OVER (ORDER BY id) AS rn FROM ACCOUNT
+) a
+JOIN (
+    SELECT id, ROW_NUMBER() OVER (ORDER BY id) AS rn FROM ACCOUNT
+) b ON b.rn = MOD(a.rn, 10000) + 1
+WHERE a.rn <= 10000;
 
 COMMIT;
